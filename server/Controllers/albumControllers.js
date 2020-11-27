@@ -112,7 +112,7 @@ const getAlbumsPages = async (req, res) => {
     });
     const finalPage = Math.ceil(AlbumsDataCout / limit);
     try {
-      const results = await Albums.find({})
+      const results = await Albums.find({ genres: { $regex: genres } })
         .sort({ released: sortByYear })
         .skip((page - 1) * limit)
         .limit(limit);

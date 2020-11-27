@@ -14,7 +14,7 @@ import {
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Pagination from "@material-ui/lab/Pagination";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
 import { albumPagination } from "../Redux/action";
 
@@ -55,24 +55,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function DashboardPage() {
-  let [dummy, query] = window.location.href.split("?");
-  let obj = {};
-  if (query != undefined) {
-    query = query.split("&");
-    for (let i = 0; i < query.length; i++) {
-      const [key, value] = query[i].split("=");
-      obj[key] = value;
-    }
-  }
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
+  let query = new URLSearchParams(useLocation().search);
   const { total, albumData } = useSelector((state) => state.app);
-  const [page, setPage] = useState(obj["page"] || 1);
+  const [page, setPage] = useState(query.get("page") || 1);
   const [limit] = useState(4);
-  const [genres, setGenres] = useState(obj["genres"] || "");
-  const [year, setYear] = useState(obj["year"] || "");
-  const [name, setName] = useState(obj["name"] || "");
+  const [genres, setGenres] = useState(query.get("genres") || "");
+  const [year, setYear] = useState(query.get("year") || "");
+  const [name, setName] = useState(query.get("name") || "");
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -92,7 +84,7 @@ export default function DashboardPage() {
   useEffect(() => {
     dispatch(albumPagination({ page, limit, name, year, genres }));
     history.push(
-      `/?limit=${limit}&page=${page}&name=${name}&geners=${genres}&year=${year}`
+      `/?limit=${limit}&page=${page}&name=${name}&genres=${genres}&year=${year}`
     );
   }, [page, name, year, genres]);
 
